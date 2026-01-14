@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreeDraft</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>TreeDraft</h1>
+            <div class="toolbar">
+                <button id="add-decision" title="Add Decision child to selected node">+ Decision</button>
+                <button id="add-chance" title="Add Chance child to selected node">+ Chance</button>
+                <button id="add-terminal" title="Add Terminal child to selected node">+ Terminal</button>
+                <button id="delete-node" class="danger" title="Delete selected node">Delete</button>
+                <span class="separator">|</span>
+                <button id="to-decision" class="secondary" title="Convert selected node to Decision">To Decision</button>
+                <button id="to-chance" class="secondary" title="Convert selected node to Chance">To Chance</button>
+                <span class="separator">|</span>
+                <button id="tool-select" class="secondary icon-btn" title="Select (hand)" aria-label="Select tool">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 11V6.5a1.5 1.5 0 0 1 3 0V10h1V5.75a1.5 1.5 0 0 1 3 0V10h1V7.25a1.5 1.5 0 0 1 3 0V14c0 3.5-2.2 6-5.5 6H11c-2.2 0-3.7-1.2-4.6-3.2L4.3 12a1.6 1.6 0 0 1 2.9-1.2L8 12v-1z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button id="tool-pen" class="secondary icon-btn" title="Pen" aria-label="Pen tool">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 17.25V21h3.75L18.8 8.95l-3.75-3.75L3 17.25z" fill="currentColor"/>
+                        <path d="M20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button id="pen-color" class="secondary icon-btn color-btn" title="Pen color (toggle red/black)" aria-label="Pen color">
+                    <span class="color-swatch" aria-hidden="true"></span>
+                </button>
+                <button id="tool-eraser" class="secondary icon-btn" title="Eraser (pen only)" aria-label="Eraser tool">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M16.5 3.5 21 8l-9.5 9.5H7L3 13.5 16.5 3.5z" fill="currentColor"/>
+                        <path d="M7 17.5h14v2H7z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button id="tool-note" class="secondary icon-btn" title="Sticky note" aria-label="Sticky note tool">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <!-- Sticky note with folded corner -->
+                        <path d="M5 3h14v12l-6 6H5V3z" fill="currentColor"/>
+                        <path d="M13 21v-6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M7 7h10M7 10h8M7 13h6" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <span class="separator">|</span>
+                <label class="toggle">
+                    <input id="auto-prob" type="checkbox" checked>
+                    Auto probabilities
+                </label>
+                <label class="toggle" title="Toggle node border colors by type">
+                    <input id="tree-colors" type="checkbox">
+                    Tree colors
+                </label>
+                <select id="digits-font-select" class="secondary toolbar-select" title="Digits font size">
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option selected>12</option>
+                    <option>13</option>
+                    <option>14</option>
+                    <option>15</option>
+                    <option>16</option>
+                    <option>17</option>
+                    <option>18</option>
+                    <option>19</option>
+                    <option>20</option>
+                </select>
+                <button id="export-png" class="secondary" title="Export cropped image (PNG)">Image</button>
+                <button id="export-pdf" class="secondary" title="Export cropped PDF (via print)">PDF</button>
+                <button id="reset-view" class="secondary" title="Reset Pan/Zoom">Recenter</button>
+            </div>
+        </header>
+        <div class="main-container">
+            <div id="tree-container">
+                <!-- SVG injected via JS -->
+                <div id="notes-layer"></div>
+                <div id="canvas-hint">Shift+drag to box-select</div>
+            </div>
+            <div id="selection-rect"></div>
+            
+            <div id="controls-overlay">
+                <strong>Controls:</strong><br>
+                • <strong>Left click</strong> a node to Select<br>
+                • <strong>Drag empty space</strong> to Box-select<br>
+                • <strong>Hold Space + drag</strong> to Pan<br>
+                • <strong>Scroll</strong> to Zoom<br>
+                • <strong>Drag node OR branch line</strong> to Move/Re-parent<br>
+                • <strong>Click number</strong> (terminal value / probability %) to Edit<br>
+                • <strong>Alt + click</strong> node to Select Subtree<br>
+                • <strong>Right Click</strong> node for Menu
+            </div>
+
+            <!-- Context Menu -->
+            <div id="context-menu">
+                <div class="menu-item" data-action="add-decision">Add Decision Node</div>
+                <div class="menu-item" data-action="add-chance">Add Chance Node</div>
+                <div class="menu-item" data-action="add-terminal">Add Terminal Node</div>
+                <div class="separator"></div>
+                <div class="menu-item" data-action="to-decision">Convert to Decision</div>
+                <div class="menu-item" data-action="to-chance">Convert to Chance</div>
+                <div class="separator"></div>
+                <div class="menu-item" data-action="delete">Delete Node</div>
+            </div>
+
+            <div id="status-bar"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
