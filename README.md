@@ -108,15 +108,20 @@ Then open `http://localhost:8000`.
 
 If PDF export is blocked, allow popups for the page and try again.
 
-## Deployment (GitHub Pages)
+## Deployment (Render)
 
-This project is a static site (no build step).
+This project is a static site (no build step). A `render.yaml` Blueprint is included for one-click deployment.
 
-- Push these files to GitHub (`index.html`, `script.js`, `style.css`, plus `README.md`).
-- In GitHub: **Settings → Pages → Build and deployment**
-  - **Source**: “Deploy from a branch”
-  - **Branch**: `main` (or `master`) / root
+1. Push the repo to GitHub.
+2. Go to [render.com](https://render.com) -> **New -> Blueprint**.
+3. Connect the `artem-potlog/TreeDraft` repository.
+4. Render detects `render.yaml` automatically and creates a **Static Site** service.
+5. Click **Apply** -- the site is live in ~1 minute.
 
+To add a custom domain (e.g. `treedraft.com`):
+- In the Render dashboard open the service -> **Settings -> Custom Domains**.
+- Add `treedraft.com` and `www.treedraft.com`.
+- Update your Namecheap DNS: replace the old `A`/`CNAME` records with the values Render shows (typically a `CNAME` pointing to `<service>.onrender.com`).
 ## Privacy
 
 TreeDraft runs fully in the browser. It does not require a backend server.

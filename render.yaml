@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: treedraft
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /script.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /style.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
