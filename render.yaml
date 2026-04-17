@@ -2,8 +2,7 @@ services:
   - type: web
     name: treedraft
     env: static
-    buildCommand: ""
-    staticPublishPath: .
+    staticPublishPath: ./
     pullRequestPreviewsEnabled: false
     headers:
       - path: /*
